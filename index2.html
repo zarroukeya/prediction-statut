@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prédiction du Statut de Paiement</title>
+    <style>
+        body {
+            background-color: rgba(114, 114, 126, 0.818); /* Background bleu */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .title-container {
+            background-color: rgba(114, 114, 126, 0.818); /* Carre blanc pour le titre */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            background-color: white; /* Carre blanc pour le contenu principal */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            color: rgba(12, 12, 78, 0.93) ;
+        }
+        label, input {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: rgba(12, 12, 78, 0.93);
+        }
+        input {
+            border-width: 2px; /* Mettre le cadre en gras */
+            border-color: rgba(12, 12, 78, 0.93)
+            
+        }
+        button {
+            margin-bottom: 10px;
+            background-color:rgba(114, 114, 126, 0.818);
+            color:white;
+            font-weight: bold;
+            border-radius: 2%;
+            border-color:rgba(12, 12, 78, 0.93);
+            margin-top: 12px;
+        }
+        .logo{
+            max-width: 120px; /* Définir une largeur maximale pour l'image */
+            height: 120px; /* Ajuster automatiquement la hauteur */
+            border-radius: 1%;
+            border-color:  rgba(12, 12, 78, 0.93);
+        }
+        .h2{ 
+            color: rgba(12, 12, 78, 0.93);
+        }
+    </style>
+</head>
+<body>
+   
+    
+    <div class="container">
+        <div class="title-container">
+            <h1>Poulina Groupe Holding</h1> <!-- Carre pour le titre -->
+            <img class="logo" src="téléchargement (1).png" alt="Logo Poulina Groupe Holding"> <!-- Image/logo -->
+        </div>
+        <form id="prediction-form">
+            <div class="sub-container">
+                <h2 class="h2">Prédiction de Statut de Paiement</h2>
+                
+                <label for="activite">Entrez l'activité:</label>
+                <input type="text" id="activite" name="activite"><br>
+                <label for="montant">Entrez le montant:</label>
+                <input type="number" id="montant" name="montant"><br>
+                
+                
+                <label for="Status_Client">Choisissez le statut client:</label>
+                <input type="radio" id="nouveau" name="Status_Client" value="nouveau">
+                <label for="nouveau">Nouveau</label>
+                <input type="radio" id="regulier" name="Status_Client" value="regulier">
+                <label for="regulier">Régulier</label><br>
+                
+                <label for="methode_paiement">Choisissez la méthode de paiement:</label>
+                <input type="radio" id="espece" name="methode_paiement" value="espece">
+                <label for="espece">Espèces</label>
+                <input type="radio" id="cheque" name="methode_paiement" value="cheque">
+                <label for="cheque">Chèque bancaire</label><br>
+                
+                
+                <label for="region">Sélectionnez la région:</label>
+                <select id="region" name="region">
+                    <option value="Ariana">Ariana</option>
+                    <option value="Beja">Béja</option>
+                    <option value="Ben Arous">Ben Arous</option>
+                    <option value="Bizerte">Bizerte</option>
+                    <option value="Gabes">Gabès</option>
+                    <option value="Gafsa">Gafsa</option>
+                    <option value="Jendouba">Jendouba</option>
+                    <option value="Kairouan">Kairouan</option>
+                    <option value="Kasserine">Kasserine</option>
+                    <option value="Kebili">Kébili</option>
+                    <option value="Kef">Le Kef</option>
+                    <option value="Mahdia">Mahdia</option>
+                    <option value="Manouba">La Manouba</option>
+                    <option value="Medenine">Médenine</option>
+                    <option value="Monastir">Monastir</option>
+                    <option value="Nabeul">Nabeul</option>
+                    <option value="Sfax">Sfax</option>
+                    <option value="Sidi Bouzid">Sidi Bouzid</option>
+                    <option value="Siliana">Siliana</option>
+                    <option value="Sousse">Sousse</option>
+                    <option value="Tataouine">Tataouine</option>
+                    <option value="Tozeur">Tozeur</option>
+                    <option value="Tunis">Tunis</option>
+                    <option value="Zaghouan">Zaghouan</option>
+                </select><br>
+                
+                
+                <button type="button" onclick="predictStatus()">Prédire le statut de paiement</button>
+            </div>
+        </form>
+        <p id="predictedStatus"></p> <!-- Ajout de cet élément pour afficher le statut de paiement -->
+    </div>
+
+    <script>
+        async function predictStatus() {
+            const formData = new FormData(document.getElementById('prediction-form'));
+    
+            const data = {
+                activite: formData.get('activite'),
+                region: formData.get('region'),
+                Status_Client: formData.get('Status_Client'),
+                methode_paiement: formData.get('methode_paiement'),
+                montant: parseFloat(formData.get('montant'))
+            };
+    
+            const response = await fetch('http://127.0.0.1:8000/predict_ps/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+    
+            const result = await response.json();
+    
+            const predictedStatusElement = document.getElementById('predictedStatus');
+            predictedStatusElement.innerHTML = ''; // Clear previous content
+            const predictionDiv = document.createElement('div');
+            predictionDiv.style.border = '2px solid  rgba(12, 12, 78, 0.93)'; // Cadre bleu
+            predictionDiv.style.padding = '10px';
+            predictionDiv.style.fontWeight = 'bold'; // Texte en gras
+            predictionDiv.style.color = ' rgba(12, 12, 78, 0.93)'; // Texte bleu
+            predictionDiv.innerText = `Statut de paiement prédit : ${result.predicted_status}`;
+            predictedStatusElement.appendChild(predictionDiv);
+        }
+    </script>
+    
+</body>
+</html>
+
